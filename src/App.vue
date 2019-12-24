@@ -1,17 +1,123 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody id="sensorWrap" v-for="person in glamorousPeople" :key="person.id">
+        <Person
+          :id="person.id"
+          :firstName="person.firstName"
+          :lastName="person.lastName"
+          @removePerson="remove"
+          @changePerson="editPerson(person)"
+        />
+      </tbody>
+    </table>
+    <div class="input-group mb-3">
+      <h2>Add a New Person</h2>
+      <input
+        type="text"
+        class="form-control mt-3"
+        placeholder="Enter First Name"
+        aria-label="First"
+        aria-describedby="basic-addon1"
+        v-model="newGlamIcon.firstName"
+        required
+      />
+      <input
+        type="text"
+        class="form-control mt-3"
+        placeholder="Enter Last Name"
+        aria-label="Last"
+        aria-describedby="basic-addon1"
+        v-model="newGlamIcon.lastName"
+        required
+      />
+      <button type="button" class="btn btn-info mt-3" @click="addPerson">
+        Add
+      </button>
+    </div>
+    <pop-up
+      v-if="PopUpState"
+      :person="person"
+      @closePopUp="PopUpState = false"
+      @save="updatePerson($event)"
+    />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Person from "./components/Person.vue";
+import PopUp from "./components/PopUp.vue";
 
 export default {
   name: "app",
+  data: () => ({
+    person: null,
+    PopUpState: false,
+    glamorousPeople: [
+      {
+        id: 1,
+        firstName: "David",
+        lastName: "Bowie"
+      },
+      {
+        id: 2,
+        firstName: "Gerard",
+        lastName: "Way"
+      },
+      {
+        id: 3,
+        firstName: "Brian",
+        lastName: "May"
+      }
+    ],
+    newGlamIcon: {
+      firstName: null,
+      lastName: null
+    },
+    counter: 3
+  }),
   components: {
-    HelloWorld
+    Person,
+    PopUp
+  },
+  methods: {
+    remove(e) {
+      this.glamorousPeople = this.glamorousPeople.filter(el => {
+        return el.id != e;
+      });
+    },
+    addPerson() {
+      this.counter++;
+      this.newGlamIcon.firstName &&
+        this.newGlamIcon.lastName &&
+        this.glamorousPeople.push({
+          id: this.counter,
+          firstName: this.newGlamIcon.firstName,
+          lastName: this.newGlamIcon.lastName
+        });
+    },
+    updatePerson($event) {
+      this.glamorousPeople.map(el => {
+        if (el.id == $event.id) {
+          el.firstName = $event.firstName;
+          el.lastName = $event.lastName;
+        }
+        return el;
+      });
+      this.PopUpState = false;
+    },
+    editPerson(person) {
+      this.PopUpState = true;
+      this.person = person;
+    }
   }
 };
 </script>
@@ -23,6 +129,22 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.input-group {
+  margin: 2rem;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+}
+
+.form-control {
+  width: 100% !important;
 }
 </style>
