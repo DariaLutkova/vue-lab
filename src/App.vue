@@ -1,15 +1,26 @@
 <template>
   <div id="app">
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control mt-3"
+        placeholder="Search by firstname"
+        aria-label="First"
+        aria-describedby="basic-addon1"
+        v-model="search"
+        required
+      />
+    </div>
     <table class="table">
       <thead class="thead-dark">
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">First Name</th>
-          <th scope="col">Last Name</th>
+          <th @click="field = 'id'" scope="col">#</th>
+          <th @click="field = 'firstName'" scope="col">First Name</th>
+          <th @click="field = 'lastName'" scope="col">Last Name</th>
           <th scope="col"></th>
         </tr>
       </thead>
-      <tbody id="sensorWrap" v-for="person in glamorousPeople" :key="person.id">
+      <tbody id="sensorWrap" v-for="person in sordedList" :key="person.id">
         <Person
           :id="person.id"
           :firstName="person.firstName"
@@ -43,6 +54,7 @@
         Add
       </button>
     </div>
+    <!-- {{ filteredList }} -->
     <pop-up
       v-if="PopUpState"
       :person="person"
@@ -60,6 +72,9 @@ export default {
   name: "app",
   data: () => ({
     person: null,
+    search: "",
+    field: "firstName",
+    sort: true,
     PopUpState: false,
     glamorousPeople: [
       {
@@ -87,6 +102,22 @@ export default {
   components: {
     Person,
     PopUp
+  },
+  computed: {
+    filteredList() {
+      return this.glamorousPeople.filter(person => {
+        let fullName = person.firstName + " " + person.lastName;
+        return fullName.toLowerCase().indexOf(this.search.toLowerCase()) != -1;
+      });
+    },
+    sordedList() {
+      let newList = this.filteredList;
+      return newList.sort((a, b) => {
+        if (a[this.field] > b[this.field]) return 1;
+        if (a[this.field] < b[this.field]) return -1;
+        return 0;
+      });
+    }
   },
   methods: {
     remove(e) {
@@ -146,5 +177,15 @@ export default {
 
 .form-control {
   width: 100% !important;
+}
+
+.search-box {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.table thead th:hover {
+  background-color: #ccc;
+  cursor: pointer;
 }
 </style>
