@@ -70,29 +70,16 @@ import PopUp from "./components/PopUp.vue";
 
 export default {
   name: "app",
+  created() {
+    this.updatePersonList();
+  },
   data: () => ({
     person: null,
     search: "",
     field: "firstName",
     sort: true,
     PopUpState: false,
-    glamorousPeople: [
-      {
-        id: 1,
-        firstName: "David",
-        lastName: "Bowie"
-      },
-      {
-        id: 2,
-        firstName: "Gerard",
-        lastName: "Way"
-      },
-      {
-        id: 3,
-        firstName: "Brian",
-        lastName: "May"
-      }
-    ],
+    glamorousPeople: [],
     newGlamIcon: {
       firstName: null,
       lastName: null
@@ -120,30 +107,71 @@ export default {
     }
   },
   methods: {
+    updatePersonList() {
+      fetch("http://localhost:3000/persons")
+        .then(response => response.json())
+        .catch(error => {
+          console.error("Error:", error);
+        })
+        .then(response => {
+          this.glamorousPeople = response;
+        });
+    },
     remove(e) {
-      this.glamorousPeople = this.glamorousPeople.filter(el => {
-        return el.id != e;
+      // this.glamorousPeople = this.glamorousPeople.filter(el => {
+      //   return el.id != e;
+      // });
+      fetch(`http://localhost:3000/persons/${e}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(() => {
+        this.updatePersonList();
       });
     },
     addPerson() {
       this.counter++;
       this.newGlamIcon.firstName &&
         this.newGlamIcon.lastName &&
-        this.glamorousPeople.push({
-          id: this.counter,
-          firstName: this.newGlamIcon.firstName,
-          lastName: this.newGlamIcon.lastName
-        });
+        fetch("http://localhost:3000/persons", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: this.counter,
+            firstName: this.newGlamIcon.firstName,
+            lastName: this.newGlamIcon.lastName
+          })
+        })
+          .then(response => response.json())
+          .catch(error => console.error("Error:", error))
+          .then(() => {
+            this.updatePersonList();
+          });
     },
     updatePerson($event) {
-      this.glamorousPeople.map(el => {
-        if (el.id == $event.id) {
-          el.firstName = $event.firstName;
-          el.lastName = $event.lastName;
-        }
-        return el;
+      // this.glamorousPeople.map(el => {
+      //   if (el.id == $event.id) {
+      //     el.firstName = $event.firstName;
+      //     el.lastName = $event.lastName;
+      //   }
+      //   return el;
+      // });
+      fetch(`http://localhost:3000/persons/${$event.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          firstName: $event.firstName,
+          lastName: $event.lastName
+        })
+      }).then(() => {
+        this.updatePersonList();
+        this.PopUpState = false;
       });
-      this.PopUpState = false;
     },
     editPerson(person) {
       this.PopUpState = true;

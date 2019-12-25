@@ -1,0 +1,29 @@
+{
+  "persons": [
+    {
+      "id": 1,
+      "firstName": "David",
+      "lastName": "Bowie"
+    },
+    {
+      "id": 2,
+      "firstName": "Gerard",
+      "lastName": "Way"
+    },
+    {
+      "id": 3,
+      "firstName": "Brian",
+      "lastName": "May"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
