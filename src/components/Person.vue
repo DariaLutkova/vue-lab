@@ -3,18 +3,18 @@
     <th scope="row">{{ id }}</th>
     <td>{{ firstName }}</td>
     <td>{{ lastName }}</td>
-    <td>
+    <td class="flex">
       <button
         type="button"
         class="close rewrite"
         aria-label="Rewrite"
         @click="$emit('changePerson', { id, firstName, lastName })"
       >
-        <span aria-hidden="true">Rewrite</span>
+        <span aria-hidden="true"><i class="fas fa-pen"></i></span>
       </button>
       <button
         type="button"
-        class="close"
+        class="close def"
         aria-label="Close"
         @click="clickHandler"
       >
@@ -33,4 +33,19 @@ export default {
   }
 };
 </script>
-<style></style>
+<style>
+  .flex {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+  }
+
+  .rewrite {
+    font-size: 18px;
+  }
+
+  .def {
+    font-size: 32px;
+    right: 10px;
+  }
+</style>
